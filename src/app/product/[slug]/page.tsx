@@ -1,22 +1,44 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AddToCart } from "@/components/add-to-cart";
 export const dynamic = "force-dynamic";
-export default async function ProductPage({params}:{params:Promise<{slug:string}>}) {
-  const {slug}=await params;
-  const product=await prisma.product.findFirst({where:{slug,published:true},include:{images:{orderBy:{position:"asc"}},variants:{where:{stock:{gt:0}},orderBy:{size:"asc"}}}});
-  if(!product) notFound();
+
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = await prisma.product.findFirst({
+    where: { slug, published: true },
+    include: {
+      images: { orderBy: { position: "asc" } },
+      variants: { where: { stock: { gt: 0 } }, orderBy: { size: "asc" } }
+    }
+  });
+
+  if (!product) notFound();
+
   return (
-    <main className="container section product-detail">
-      <div className="product-gallery grid-products">
-        {product.images.map(img=><div className="product-image" key={img.id}><img src={img.url} alt={img.alt}/></div>)}
-      </div>
-      <div className="product-details">
-        <div className="eyebrow">{product.category}</div>
-        <h1 className="serif product-title">{product.name}</h1>
-        <p className="product-price">₹{(product.pricePaise/100).toLocaleString("en-IN")}</p>
-        <p className="product-description">{product.description}</p>
-        <AddToCart variants={product.variants.map(v=>({id:v.id,size:v.size,stock:v.stock}))}/>
+    <main className="container section product-page">
+      <nav className="product-breadcrumb eyebrow" aria-label="Breadcrumb">
+        <Link href="/shop">The collection</Link>
+        <span aria-hidden="true">/</span>
+        <span>{product.category}</span>
+      </nav>
+      <div className="product-detail">
+        <div className="product-gallery">
+          {product.images.map((image) => (
+            <div className="product-image" key={image.id}>
+              <img src={image.url} alt={image.alt} />
+            </div>
+          ))}
+        </div>
+        <div className="product-details">
+          <div className="eyebrow">{product.category} / ATELIER NOIR</div>
+          <h1 className="serif product-title">{product.name}</h1>
+          <p className="product-price">₹{(product.pricePaise / 100).toLocaleString("en-IN")}</p>
+          <p className="product-description">{product.description}</p>
+          <AddToCart variants={product.variants.map((variant) => ({ id: variant.id, size: variant.size, stock: variant.stock }))} />
+          <p className="product-assurance">Considered materials. Made to be worn on repeat.</p>
+        </div>
       </div>
     </main>
   );

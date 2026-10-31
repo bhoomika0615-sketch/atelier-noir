@@ -32,11 +32,14 @@ export function CheckoutForm() {
     finally{setBusy(false);}
   }
   const fields:[string,string,boolean][]=[["fullName","Full name",true],["line1","Address line 1",true],["line2","Address line 2",false],["city","City",true],["state","State",true],["postalCode","PIN / postal code",true],["country","Country",true],["phone","Phone number",true]];
-  return <section style={{maxWidth:600,marginTop:40}}>
+  return <section className="checkout-form">
     <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive"/>
-    <h2 className="serif" style={{fontSize:34}}>Delivery details</h2>
-    {fields.map(([key,label,required])=><label key={key} className="eyebrow" style={{display:"block",marginTop:12}}>{label}<input className="field" value={form[key as keyof typeof form]} required={required} maxLength={180} onChange={e=>update(key,e.target.value)}/></label>)}
-    <button className="button" style={{width:"100%"}} disabled={busy} onClick={checkout}>{busy?"Preparing secure checkout…":"Continue to payment"}</button>
-    {message&&<p role="status" style={{fontSize:12,lineHeight:1.7,marginTop:14}}>{message}</p>}
+    <div className="eyebrow">Secure checkout</div>
+    <h2 className="serif checkout-title">Delivery details</h2>
+    <div className="checkout-fields">
+      {fields.map(([key,label,required])=><label key={key} className="form-label">{label}<input className="field" value={form[key as keyof typeof form]} required={required} maxLength={180} onChange={e=>update(key,e.target.value)}/></label>)}
+    </div>
+    <button className="button checkout-submit" disabled={busy} onClick={checkout}>{busy?"Preparing secure checkout…":"Continue to payment"} <span aria-hidden="true">↗</span></button>
+    {message&&<p className="checkout-feedback" role="status">{message}</p>}
   </section>;
 }

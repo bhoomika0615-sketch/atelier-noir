@@ -9,5 +9,29 @@ export function AddToCart({variants}:{variants:{id:string;size:string;stock:numb
     const data=await res.json();
     setMessage(res.ok?"Added to your bag.":data.error||"Please sign in to add items.");
   }
-  return <div><div className="eyebrow" style={{marginBottom:12}}>Select size</div><div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:26}}>{variants.map(v=><button key={v.id} className={`button ${variantId===v.id?"":"button-outline"}`} onClick={()=>setVariantId(v.id)} disabled={v.stock<1}>{v.size}</button>)}</div><button className="button" style={{width:"100%"}} onClick={add} disabled={!variantId}>Add to bag</button>{message&&<p role="status" style={{fontSize:12,marginTop:12}}>{message}</p>}</div>;
+  return (
+    <div className="add-to-cart">
+      <div className="eyebrow size-label">Select size</div>
+      {variants.length ? (
+        <div className="size-options" role="group" aria-label="Available sizes">
+          {variants.map((variant) => (
+            <button
+              type="button"
+              key={variant.id}
+              className={`size-option${variantId === variant.id ? " is-selected" : ""}`}
+              onClick={() => setVariantId(variant.id)}
+              disabled={variant.stock < 1}
+              aria-pressed={variantId === variant.id}
+            >
+              {variant.size}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="product-unavailable" role="status">Currently unavailable</p>
+      )}
+      <button type="button" className="button add-to-bag" onClick={add} disabled={!variantId}>Add to bag <span aria-hidden="true">↗</span></button>
+      {message && <p className="cart-feedback" role="status">{message}</p>}
+    </div>
+  );
 }

@@ -25,10 +25,10 @@ export function SiteHeader() {
         <Link className="navlink" href="/shop?category=Essentials">Essentials</Link>
         <Link className="navlink" href="/journal">Journal</Link>
       </nav>
-      <div className="header-actions">
+      <nav className="header-actions" aria-label="Account and shopping bag">
         <Link href="/account" aria-label="Account"><UserRound size={19} strokeWidth={1.5}/><span>Account</span></Link>
         <Link href="/cart" aria-label="Shopping bag"><ShoppingBag size={19} strokeWidth={1.5}/><span>Bag</span></Link>
-      </div>
+      </nav>
     </header>
   </>;
 }

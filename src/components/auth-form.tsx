@@ -9,11 +9,11 @@ export function AuthForm({mode}:{mode:"login"|"register"|"admin"}) {
    window.location.href=mode==="admin"?"/admin":"/account";
   }catch(err){setError(err instanceof Error?err.message:"Unable to sign in.");}finally{setBusy(false);}
  }
- return <form onSubmit={submit}>
- {mode==="register"&&<><label className="eyebrow">Full name</label><input className="field" value={name} onChange={e=>setName(e.target.value)} required maxLength={80}/></>}
- <label className="eyebrow">Email address</label><input className="field" type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} required maxLength={254}/>
- <label className="eyebrow">Password</label><input className="field" type="password" autoComplete={mode==="register"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} required minLength={mode==="register"?12:1} maxLength={128}/>
- {error&&<p role="alert" style={{fontSize:12,color:"#a12d25"}}>{error}</p>}
- <button className="button" style={{width:"100%"}} disabled={busy}>{busy?"Please wait…":mode==="register"?"Create account":"Sign in"}</button>
+ return <form className="auth-form" onSubmit={submit}>
+ {mode==="register"&&<label className="form-label">Full name<input className="field" autoComplete="name" value={name} onChange={e=>setName(e.target.value)} required maxLength={80}/></label>}
+ <label className="form-label">Email address<input className="field" type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} required maxLength={254}/></label>
+ <label className="form-label">Password<input className="field" type="password" autoComplete={mode==="register"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} required minLength={mode==="register"?12:1} maxLength={128}/></label>
+ {error&&<p className="form-error" role="alert">{error}</p>}
+ <button className="button form-submit" disabled={busy}>{busy?"Please wait…":mode==="register"?"Create account":"Sign in"} <span aria-hidden="true">↗</span></button>
  </form>;
 }
