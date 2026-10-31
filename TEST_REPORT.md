@@ -19,14 +19,27 @@
 | `/off-the-rail` | HTTP 307 to the integrated homepage rack anchor |
 | `GET /api/products` | HTTP 200 with 0 products |
 | Read-only local database counts | 0 total products, 0 published products, 0 variants with positive stock |
-| `POST /api/auth/login` with a test-only invalid account and matching HTTPS Origin | HTTP 403 `Invalid request origin.` No credentials or account data were used. |
+| Initial `POST /api/auth/login` probe with matching HTTPS Origin | HTTP 403 `Invalid request origin.` This was before the local origin configuration fix; no credentials or account data were used. |
 
 ## Round 3 — Responsive and commerce journey
 
 - At 390px viewport width, homepage rendered three empty product rails and zero product cards. `document.documentElement.scrollWidth` equaled the available client width (375px); no horizontal overflow was observed.
 - The browser automation timed out when attempting to click the mobile menu control. The control was visible, but its open/close action is **inconclusive**, not a pass.
-- Product details, variant selection, cart updates, checkout, and payment callbacks could not be exercised because the local catalogue is empty and the HTTPS same-origin guard rejects local POSTs.
+- Product details, variant selection, cart updates, checkout, and payment callbacks could not be exercised because the local catalogue is empty. The later origin-check probe is documented below.
 - No seed script, demo records, external payment request, or live payment was run.
+
+## Follow-up remediation verification
+
+| Check | Result |
+|---|---|
+| HTTPS dev script syntax | Pass (PowerShell parser) |
+| `npm run typecheck` | Pass |
+| `npm test` | Pass: 1 file, 4 tests |
+| `npm run build` | Pass |
+| HTTPS `/` and `/shop` after the origin configuration change | HTTP 200 |
+| Empty `POST /api/auth/login` with `Origin: https://localhost:3000` | HTTP 400 request validation, rather than 403 origin rejection. This verifies origin handling only; no successful login was attempted. |
+| Product size availability | Source now filters on `stock - reserved > 0`; runtime verification is blocked by the empty catalogue. |
+| Add-to-bag client | Source now reports server/network errors and disables repeated submission while pending; product/cart interaction is blocked by the empty catalogue. |
 
 ## Dependency audit
 
@@ -35,4 +48,4 @@
 
 ## Final status
 
-The production build and basic public routes work. The end-to-end shopping journey is **not launch-ready**: local auth writes are blocked by `APP_URL`/HTTPS mismatch, the real catalogue is empty, the cart cannot be edited, and payment/inventory handling has unresolved risks documented in [`AUDIT_REPORT.md`](./AUDIT_REPORT.md). No source, schema, credentials, payment code, or product records were changed during this audit.
+The production build and basic public routes work. The local HTTPS origin mismatch is resolved for development, but successful authentication and the end-to-end shopping journey remain unverified. The catalogue is empty, the cart cannot be edited, and payment/inventory handling has unresolved risks documented in [`AUDIT_REPORT.md`](./AUDIT_REPORT.md). No database schema, credentials, payment code, or product records were changed.

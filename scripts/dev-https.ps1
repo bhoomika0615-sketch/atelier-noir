@@ -57,13 +57,15 @@ if (-not (Test-Path $certificatePath) -or -not (Test-Path $keyPath)) {
 
 Push-Location $projectRoot
 try {
+  $env:APP_URL = "https://localhost:3000"
+
   & npx.cmd prisma db push --schema prisma/schema.sqlite.prisma
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
   & npx.cmd prisma generate --schema prisma/schema.sqlite.prisma
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-  & npx.cmd next dev --experimental-https --experimental-https-key $keyPath --experimental-https-cert $certificatePath
+  & npx.cmd next dev --port 3000 --experimental-https --experimental-https-key $keyPath --experimental-https-cert $certificatePath
   exit $LASTEXITCODE
 } finally {
   Pop-Location

@@ -16,6 +16,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (!product) notFound();
 
+  const availableVariants = product.variants
+    .filter((variant) => variant.stock - variant.reserved > 0)
+    .map((variant) => ({
+      id: variant.id,
+      size: variant.size,
+      stock: variant.stock - variant.reserved,
+    }));
+
   return (
     <main className="container section product-page">
       <nav className="product-breadcrumb eyebrow" aria-label="Breadcrumb">
@@ -36,7 +44,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <h1 className="serif product-title">{product.name}</h1>
           <p className="product-price">₹{(product.pricePaise / 100).toLocaleString("en-IN")}</p>
           <p className="product-description">{product.description}</p>
-          <AddToCart variants={product.variants.map((variant) => ({ id: variant.id, size: variant.size, stock: variant.stock }))} />
+          <AddToCart variants={availableVariants} />
           <p className="product-assurance">Considered materials. Made to be worn on repeat.</p>
         </div>
       </div>
