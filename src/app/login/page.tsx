@@ -1,0 +1,2 @@
+import { AuthForm } from "@/components/auth-form";
+export default function LoginPage(){return <main className="form-shell"><div className="eyebrow">Welcome back</div><h1 className="section-title">Sign in</h1><AuthForm mode="login"/></main>}

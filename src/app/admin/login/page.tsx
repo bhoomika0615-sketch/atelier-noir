@@ -1,0 +1,2 @@
+import { AuthForm } from "@/components/auth-form";
+export default function AdminLoginPage(){return <main className="form-shell"><div className="eyebrow">Restricted access</div><h1 className="section-title">Admin sign in</h1><p style={{fontSize:12,color:"var(--muted)"}}>For authorized Atelier Noir administrators only.</p><AuthForm mode="admin"/></main>}

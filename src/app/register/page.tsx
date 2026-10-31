@@ -1,0 +1,2 @@
+import { AuthForm } from "@/components/auth-form";
+export default function RegisterPage(){return <main className="form-shell"><div className="eyebrow">Begin here</div><h1 className="section-title">Create account</h1><AuthForm mode="register"/></main>}
