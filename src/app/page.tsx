@@ -59,12 +59,13 @@ export default async function HomePage() {
       <div><span>03</span> Never overthought</div>
     </div>
     <ProductRail
+      sectionId="available-on-the-rail"
       eyebrow="The considered edit"
       title="Available on the rail"
       description="Every piece currently published and ready to choose."
       products={products}
       href="/shop"
-      emptyMessage="New pieces are being prepared. Check back soon for the collection."
+      emptyMessage="There are no published, in-stock pieces in the catalog yet. Once a piece is published and available, it will appear here."
     />
     <ProductRail
       eyebrow="Just arrived"
@@ -72,7 +73,7 @@ export default async function HomePage() {
       description="The latest pieces, sorted by when they joined the collection."
       products={newArrivals}
       href="/shop?collection=new"
-      emptyMessage="There are no in-stock arrivals just yet."
+      emptyMessage="There are no published, in-stock arrivals at the moment."
     />
     <ProductRail
       eyebrow="A considered find"
@@ -80,7 +81,7 @@ export default async function HomePage() {
       description="Current marked-down pieces, with the original price shown for clarity."
       products={saleProducts}
       href="/shop?collection=sale"
-      emptyMessage="No pieces are marked down right now."
+      emptyMessage="There are no published, in-stock sale pieces at the moment."
     />
     {featuredProducts.length > 0 && (
       <ProductRail
