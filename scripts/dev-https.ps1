@@ -1,6 +1,16 @@
 $ErrorActionPreference = "Stop"
 
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$listener = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($listener) {
+  $listenerProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)" -ErrorAction SilentlyContinue
+  if ($listenerProcess -and $listenerProcess.CommandLine -and $listenerProcess.CommandLine.IndexOf($projectRoot, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+    Write-Host "ATELIER NOIR is already running at https://localhost:3000; no second server was started."
+    exit 0
+  }
+  throw "Port 3000 is already in use by PID $($listener.OwningProcess). Stop that process before starting ATELIER NOIR."
+}
+
 $localAppData = $env:LOCALAPPDATA
 if (-not $localAppData) {
   throw "LOCALAPPDATA is not set; cannot store the local HTTPS certificate."
@@ -60,9 +70,6 @@ try {
   $env:APP_URL = "https://localhost:3000"
 
   & npx.cmd prisma db push --schema prisma/schema.sqlite.prisma
-  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-  & npx.cmd prisma generate --schema prisma/schema.sqlite.prisma
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
   & npx.cmd next dev --port 3000 --experimental-https --experimental-https-key $keyPath --experimental-https-cert $certificatePath

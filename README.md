@@ -26,6 +26,8 @@ A new editorial menswear e-commerce project built with Next.js App Router, TypeS
 
 The development command starts the site at `https://localhost:3000`, creates a local SQLite database at `prisma/dev.db`, and generates a SQLite Prisma client automatically. It uses a trusted local mkcert certificate stored outside the repository. On a new Windows machine, install [mkcert](https://github.com/FiloSottile/mkcert#installation) and run `mkcert -install` once before `npm run dev`. No `.env` file or PostgreSQL installation is needed for local development.
 
+Only run one development server at a time. If port 3000 is already serving ATELIER NOIR, keep using `https://localhost:3000`; to restart it, stop the existing server with `Ctrl+C` in its terminal before running `npm run dev` again. The dev script checks the port before Prisma runs, avoiding query-engine DLL replacement errors while another server is using the client.
+
 To recreate the local database schema and client manually, run `npm run db:local`.
 
 For PostgreSQL deployment, configure `DATABASE_URL` using `.env.example`, then use the PostgreSQL schema:
