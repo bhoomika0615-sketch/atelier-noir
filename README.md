@@ -24,7 +24,7 @@ A new editorial menswear e-commerce project built with Next.js App Router, TypeS
    npm run dev
    ```
 
-The development command creates a local SQLite database at `prisma/dev.db` and generates a SQLite Prisma client automatically. No `.env` file or PostgreSQL installation is needed for local development.
+The development command starts the site at `https://localhost:3000`, creates a local SQLite database at `prisma/dev.db`, and generates a SQLite Prisma client automatically. It uses a trusted local mkcert certificate stored outside the repository. On a new Windows machine, install [mkcert](https://github.com/FiloSottile/mkcert#installation) and run `mkcert -install` once before `npm run dev`. No `.env` file or PostgreSQL installation is needed for local development.
 
 To recreate the local database schema and client manually, run `npm run db:local`.
 

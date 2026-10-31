@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "prisma db push --schema prisma/schema.sqlite.prisma && prisma generate --schema prisma/schema.sqlite.prisma && next dev",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-https.ps1",
     "build": "prisma generate && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
