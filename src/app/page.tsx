@@ -2,10 +2,39 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 import { MotionLink } from "@/components/motion-link";
+import { ProductRail } from "@/components/product-rail";
 
 export const dynamic = "force-dynamic";
 export default async function HomePage() {
-  const products = await prisma.product.findMany({ where:{published:true}, include:{images:{orderBy:{position:"asc"},take:1}}, orderBy:{createdAt:"desc"}, take:4 });
+  const records = await prisma.product.findMany({
+    where: { published: true },
+    include: {
+      images: { orderBy: { position: "asc" }, take: 1 },
+      variants: { select: { stock: true, reserved: true } }
+    },
+    orderBy: { createdAt: "desc" }
+  });
+  const products = records.map((product) => ({
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    category: product.category,
+    pricePaise: product.pricePaise,
+    compareAtPaise: product.compareAtPaise,
+    featured: product.featured,
+    createdAt: product.createdAt,
+    images: product.images,
+    availableQuantity: product.variants.reduce(
+      (total, variant) => total + Math.max(variant.stock - variant.reserved, 0),
+      0
+    )
+  })).filter((product) => product.availableQuantity > 0);
+  const newArrivals = products.slice(0, 8);
+  const saleProducts = products.filter(
+    (product) => product.compareAtPaise !== null && product.compareAtPaise > product.pricePaise
+  );
+  const featuredProducts = products.filter((product) => product.featured).slice(0, 8);
+
   return <main>
     <section className="container hero-wrap">
       <div className="hero">
@@ -29,13 +58,40 @@ export default async function HomePage() {
       <div><span>02</span> Worn on repeat</div>
       <div><span>03</span> Never overthought</div>
     </div>
-    <section className="container section collection-section">
-      <Reveal className="section-head"><div><div className="eyebrow">Less, but better</div><h2 className="section-title">The considered edit<span className="title-period">.</span></h2></div><Link className="text-link" href="/shop">Explore all pieces <span aria-hidden="true">↗</span></Link></Reveal>
-      {products.length ? <div className="grid-products">{products.map((p, index)=><Reveal className="product-reveal" delay={index * 0.08} key={p.id}><Link href={`/product/${p.slug}`} className="product-card">
-        <div className="product-image">{p.images[0] && <img src={p.images[0].url} alt={p.images[0].alt} loading="lazy"/>}<span className="product-view">Discover <span aria-hidden="true">↗</span></span></div>
-        <div className="product-info"><span>{p.name}</span><span>₹{(p.pricePaise/100).toLocaleString("en-IN")}</span></div><div className="product-meta">{p.category}</div>
-      </Link></Reveal>)}</div> : <Reveal><div className="empty-collection"><span className="eyebrow">A wardrobe, in the making</span><p>The first collection is being prepared. In the meantime, discover the pieces and ideas behind Atelier Noir.</p><Link className="text-link" href="/journal">Read our journal <span aria-hidden="true">↗</span></Link></div></Reveal>}
-    </section>
+    <ProductRail
+      eyebrow="The considered edit"
+      title="Available on the rail"
+      description="Every piece currently published and ready to choose."
+      products={products}
+      href="/shop"
+      emptyMessage="New pieces are being prepared. Check back soon for the collection."
+    />
+    <ProductRail
+      eyebrow="Just arrived"
+      title="New arrivals"
+      description="The latest pieces, sorted by when they joined the collection."
+      products={newArrivals}
+      href="/shop?collection=new"
+      emptyMessage="There are no in-stock arrivals just yet."
+    />
+    <ProductRail
+      eyebrow="A considered find"
+      title="The sale rail"
+      description="Current marked-down pieces, with the original price shown for clarity."
+      products={saleProducts}
+      href="/shop?collection=sale"
+      emptyMessage="No pieces are marked down right now."
+    />
+    {featuredProducts.length > 0 && (
+      <ProductRail
+        eyebrow="Selected by the studio"
+        title="Featured pieces"
+        description="A closer look at the pieces highlighted by Atelier Noir."
+        products={featuredProducts}
+        href="/shop"
+        emptyMessage="Our considered edit is coming together."
+      />
+    )}
     <section className="container category-section">
       <Reveal className="section-head"><div><div className="eyebrow">Find your form</div><h2 className="section-title">A study in essentials<span className="title-period">.</span></h2></div><p className="category-intro">Pieces that work harder, wear longer, and make getting dressed feel effortless.</p></Reveal>
       <div className="category-grid">

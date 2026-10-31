@@ -12,6 +12,8 @@ export function SiteHeader() {
         <summary aria-label="Open navigation menu"><span/><span/></summary>
         <nav className="mobile-menu-panel" aria-label="Mobile navigation">
           <Link href="/shop">Shop all</Link>
+          <Link href="/shop?collection=new">New arrivals</Link>
+          <Link href="/shop?collection=sale">Sale</Link>
           <Link href="/shop?category=Outerwear">Outerwear</Link>
           <Link href="/shop?category=Essentials">Essentials</Link>
           <Link href="/shop?category=Tailoring">Tailoring</Link>
@@ -21,8 +23,9 @@ export function SiteHeader() {
       <Link href="/" className="wordmark" aria-label="Atelier Noir home">ATELIER <span>NOIR</span></Link>
       <nav className="nav-desktop" aria-label="Main navigation">
         <Link className="navlink" href="/shop">Shop</Link>
+        <Link className="navlink" href="/shop?collection=new">New</Link>
+        <Link className="navlink" href="/shop?collection=sale">Sale</Link>
         <Link className="navlink" href="/shop?category=Outerwear">Outerwear</Link>
-        <Link className="navlink" href="/shop?category=Essentials">Essentials</Link>
         <Link className="navlink" href="/journal">Journal</Link>
       </nav>
       <nav className="header-actions" aria-label="Account and shopping bag">
