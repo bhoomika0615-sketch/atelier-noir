@@ -26,7 +26,7 @@ function formatPrice(pricePaise: number) {
 
 export function ProductRail({ eyebrow, title, description, products, href, emptyMessage }: ProductRailProps) {
   return (
-    <section className="container product-rail-section" aria-label={title}>
+    <section id="available-on-the-rail" className="container product-rail-section" aria-label={title}>
       <header className="product-rail-heading">
         <div>
           <div className="eyebrow">{eyebrow}</div>
