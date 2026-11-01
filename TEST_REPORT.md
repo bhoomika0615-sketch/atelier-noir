@@ -40,6 +40,9 @@
 | Empty `POST /api/auth/login` with `Origin: https://localhost:3000` | HTTP 400 request validation, rather than 403 origin rejection. This verifies origin handling only; no successful login was attempted. |
 | Product size availability | Source now filters on `stock - reserved > 0`; runtime verification is blocked by the empty catalogue. |
 | Add-to-bag client | Source now reports server/network errors and disables repeated submission while pending; product/cart interaction is blocked by the empty catalogue. |
+| Shop search and sorting | Browser verified query `q=silk&sort=oldest` updates the form and results. Empty catalog returns a truthful no-match state. |
+| Cart API `POST`, `PATCH`, `DELETE` without a session | Each returned HTTP 401 `Authentication required`; no cart data was modified. |
+| Mobile shop layout | At 390px viewport, document content width matched the available 375px; no horizontal overflow. Search and sort controls rendered and the query form navigated successfully. |
 
 ## Dependency audit
 
@@ -48,4 +51,4 @@
 
 ## Final status
 
-The production build and basic public routes work. The local HTTPS origin mismatch is resolved for development, but successful authentication and the end-to-end shopping journey remain unverified. The catalogue is empty, the cart cannot be edited, and payment/inventory handling has unresolved risks documented in [`AUDIT_REPORT.md`](./AUDIT_REPORT.md). No database schema, credentials, payment code, or product records were changed.
+The production build passed before this follow-up batch; it was not rerun with the current changes while the dev server was using the Prisma Windows DLL. TypeScript, unit tests, route checks, mobile shop layout, and unauthenticated cart API checks passed. Successful authentication, authenticated cart edits, product-level journeys, and payment remain unverified because the local catalogue has no products and no test account/payment configuration is available. Payment/inventory risks remain documented in [`AUDIT_REPORT.md`](./AUDIT_REPORT.md). No database schema, credentials, or product records were changed.

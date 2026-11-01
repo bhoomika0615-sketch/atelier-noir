@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { CheckoutForm } from "@/components/checkout-form";
+import { CartItems } from "@/components/cart-items";
 export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
@@ -21,9 +22,32 @@ export default async function CartPage() {
 
   const cart = await prisma.cart.findUnique({
     where: { userId: user.id },
-    include: { items: { include: { variant: { include: { product: true } } } } }
+    include: {
+      items: {
+        include: {
+          variant: {
+            include: {
+              product: {
+                include: { images: { orderBy: { position: "asc" }, take: 1 } }
+              }
+            }
+          }
+        }
+      }
+    }
   });
   const subtotal = cart?.items.reduce((sum, item) => sum + item.variant.product.pricePaise * item.quantity, 0) || 0;
+  const cartItems = cart?.items.map((item) => ({
+    id: item.id,
+    variantId: item.variant.id,
+    name: item.variant.product.name,
+    slug: item.variant.product.slug,
+    size: item.variant.size,
+    quantity: item.quantity,
+    unitPricePaise: item.variant.product.pricePaise,
+    availableQuantity: Math.max(item.variant.stock - item.variant.reserved, 0),
+    image: item.variant.product.images[0] ?? null
+  })) ?? [];
 
   return (
     <main className="container section cart-page">
@@ -37,15 +61,7 @@ export default async function CartPage() {
       ) : (
         <div className="cart-layout">
           <section className="cart-items" aria-label="Items in your bag">
-            {cart.items.map((item) => (
-              <article className="cart-item" key={item.id}>
-                <div>
-                  <h2>{item.variant.product.name}</h2>
-                  <p className="product-meta">Size {item.variant.size} · Qty {item.quantity}</p>
-                </div>
-                <span>₹{(item.variant.product.pricePaise * item.quantity / 100).toLocaleString("en-IN")}</span>
-              </article>
-            ))}
+            <CartItems items={cartItems} />
             <div className="cart-subtotal">
               <span>Subtotal</span>
               <span>₹{(subtotal / 100).toLocaleString("en-IN")}</span>

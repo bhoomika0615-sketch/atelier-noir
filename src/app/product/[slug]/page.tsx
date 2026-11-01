@@ -1,8 +1,36 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { AddToCart } from "@/components/add-to-cart";
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await prisma.product.findFirst({
+    where: { slug, published: true },
+    select: {
+      name: true,
+      description: true,
+      images: { orderBy: { position: "asc" }, take: 1, select: { url: true, alt: true } }
+    }
+  });
+
+  if (!product) return { title: "Piece | ATELIER NOIR" };
+
+  return {
+    title: `${product.name} | ATELIER NOIR`,
+    description: product.description.slice(0, 160),
+    alternates: { canonical: `/product/${slug}` },
+    openGraph: {
+      title: `${product.name} | ATELIER NOIR`,
+      description: product.description.slice(0, 160),
+      type: "website",
+      url: `/product/${slug}`,
+      images: product.images.map((image) => ({ url: image.url, alt: image.alt }))
+    }
+  };
+}
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -42,7 +70,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="product-details">
           <div className="eyebrow">{product.category} / ATELIER NOIR</div>
           <h1 className="serif product-title">{product.name}</h1>
-          <p className="product-price">₹{(product.pricePaise / 100).toLocaleString("en-IN")}</p>
+          <p className="product-price">
+            ₹{(product.pricePaise / 100).toLocaleString("en-IN")}
+            {product.compareAtPaise !== null && product.compareAtPaise > product.pricePaise && (
+              <del>₹{(product.compareAtPaise / 100).toLocaleString("en-IN")}</del>
+            )}
+          </p>
           <p className="product-description">{product.description}</p>
           <AddToCart variants={availableVariants} />
           <p className="product-assurance">Considered materials. Made to be worn on repeat.</p>

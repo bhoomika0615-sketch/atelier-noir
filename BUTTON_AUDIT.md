@@ -17,10 +17,10 @@
 | Homepage | Journal link | Pass | `/journal` returned HTTP 200. |
 | Shop | All, New, Sale, category filters | Pass for routing | `/shop`, `/shop?collection=new`, `/shop?collection=sale`, and category destinations returned HTTP 200. Filter results cannot be verified without catalogue data. |
 | Shop | Product card → `/product/[slug]` | Blocked | No product records exist to create a valid product destination. |
-| Product detail | Size selection / Add to bag | Blocked | No published/in-stock products. Source now filters reserved sizes and surfaces request failures, but product/cart interactions remain untested (see [`AUDIT_REPORT.md`](./AUDIT_REPORT.md), A-08/A-09). |
+| Product detail | Size selection / Add to bag | Blocked | No published/in-stock products. Source filters reserved sizes, reports request failures, and adds repeated quantities within availability limits, but product/cart interactions remain untested (see [`AUDIT_REPORT.md`](./AUDIT_REPORT.md), A-08/A-09). |
 | Cart | Sign in / browse collection | Pass for routing | `/login` and `/shop` both return HTTP 200. |
-| Cart | Quantity/remove controls | Missing | Current UI displays a static quantity; there is no API or UI action to update/remove items. |
-| Checkout | Required address fields | Partial | Inputs have `required`, but the button is not a form submit, so browser-native validation does not run. Server-side schema validation exists. |
+| Cart | Quantity/remove controls | Implemented; authenticated flow untested | Quantity changes and line removal use owner-scoped cart API endpoints. No signed-in cart was available for a browser journey. |
+| Checkout | Required address fields | Implemented; payment untested | Checkout uses a native form for required-field validation. No cart or test payment was available. |
 | Checkout | Continue to payment | Blocked | No cart data; authenticated checkout and payment were not tested. The local HTTPS origin is now aligned with the same-origin guard; no test payment was run. |
 | Authentication | Login/register/admin login submit | Partial | A non-mutating empty login POST from `https://localhost:3000` returned 400 request validation instead of 403 origin rejection. No account was created and successful authentication was not tested. |
 | Footer | Shop, Journal, Account, Admin | Pass for routing | The public pages and admin-login destination exist; protected account/admin behavior was not authenticated. |

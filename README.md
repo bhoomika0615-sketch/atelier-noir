@@ -42,7 +42,7 @@ Do not use the local SQLite database for production.
 ## Routes
 
 - `/` — editorial storefront
-- `/shop` — public product catalogue
+- `/shop` — searchable, sortable public product catalogue with category/collection filters and pagination
 - `/product/[slug]` — product detail and size selection
 - `/cart` — signed-in customer's cart
 - `/login`, `/register` — customer authentication
@@ -62,7 +62,7 @@ The seed script creates/updates the `INITIAL_ADMIN_EMAIL` as `SUPER_ADMIN`. Use 
 - `POST /api/auth/logout`
 - `GET /api/products` (intentionally public catalogue)
 - `GET /api/cart` (authenticated; own cart only)
-- `POST /api/cart/items` (authenticated; own cart only)
+- `POST|PATCH|DELETE /api/cart/items` (authenticated; own cart only)
 - `GET|POST /api/admin/products` (admin only)
 - `POST /api/checkout` (authenticated; Razorpay credentials required)
 - `POST /api/payments/webhook` (Razorpay signature verification)

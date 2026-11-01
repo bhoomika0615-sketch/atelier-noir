@@ -15,6 +15,13 @@ export const cartSchema = z.object({
   variantId: z.string().cuid(),
   quantity: z.number().int().min(1).max(5)
 }).strict();
+export const cartItemUpdateSchema = z.object({
+  cartItemId: z.string().cuid(),
+  quantity: z.number().int().min(1).max(5)
+}).strict();
+export const cartItemDeleteSchema = z.object({
+  cartItemId: z.string().cuid()
+}).strict();
 export const productSchema = z.object({
   name: z.string().trim().min(2).max(120),
   slug: z.string().trim().min(2).max(140).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),

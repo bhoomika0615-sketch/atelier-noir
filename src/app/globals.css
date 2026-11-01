@@ -280,6 +280,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .product-details { position: sticky; top: 120px; padding-top: 24px; }
 .product-title { margin: 16px 0 12px; font-size: clamp(40px, 5vw, 64px); line-height: 1.02; letter-spacing: -.06em; }
 .product-price { margin: 0; font-family: var(--serif); font-size: 21px; }
+.product-price del { margin-left: 10px; color: var(--muted); font-family: var(--sans); font-size: 12px; }
 .product-description { max-width: 490px; margin: 28px 0; color: var(--muted); font-size: 13px; line-height: 1.9; }
 
 .shop-page { min-height: 70vh; padding-top: 85px; padding-bottom: 125px; }
@@ -297,7 +298,21 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .shop-filter { padding: 9px 13px; border: 1px solid transparent; border-radius: 100px; color: var(--muted); font-size: 9px; transition: background .2s ease, color .2s ease, border-color .2s ease; }
 .shop-filter:hover { border-color: var(--line); color: var(--ink); }
 .shop-filter.is-active { background: var(--ink); color: var(--paper); }
+.shop-search-sort { display: flex; align-items: flex-end; justify-content: flex-end; flex-wrap: wrap; gap: 12px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.shop-search-label, .shop-sort-label { display: grid; gap: 6px; color: var(--muted); font-size: 8px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.shop-search-label { width: min(100%, 290px); margin-right: auto; }
+.shop-search-label input, .shop-sort-label select { min-height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); font-size: 11px; letter-spacing: normal; text-transform: none; }
+.shop-search-label input { width: 100%; }
+.shop-sort-label select { min-width: 165px; }
+.shop-search-submit { min-height: 40px; padding: 0 15px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer; font-size: 8px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.shop-search-submit:hover { background: transparent; color: var(--ink); }
 .shop-products { padding-top: 30px; }
+.shop-pagination { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-top: 35px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+.shop-pagination > div { display: flex; align-items: center; gap: 18px; }
+.shop-page-link { min-height: 38px; display: inline-flex; align-items: center; padding: 0 12px; border: 1px solid var(--line); color: var(--ink); }
+.shop-page-link:hover { border-color: var(--ink); }
+.shop-page-link.is-disabled { opacity: .45; }
+.shop-page-indicator { color: var(--muted); font-size: 9px; }
 .shop-empty { position: relative; min-height: 420px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-top: 30px; padding: clamp(30px, 8vw, 90px); overflow: hidden; background: var(--primary) url("/atelier-wave.svg") center / cover no-repeat; }
 .shop-empty-art { position: relative; width: min(35vw, 280px); aspect-ratio: 1; display: grid; place-items: center; flex: 0 0 auto; color: var(--accent); }
 .shop-empty-art svg { width: 100%; height: 100%; animation: art-orbit 36s linear infinite; }
@@ -383,6 +398,10 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .shop-filters { width: 100%; overflow-x: auto; padding-bottom: 3px; }
   .shop-filter { flex: 0 0 auto; }
   .shop-sort-note { display: none; }
+  .shop-search-label { width: 100%; flex: 1 1 100%; }
+  .shop-sort-label { flex: 1 1 150px; }
+  .shop-sort-label select { width: 100%; min-width: 0; }
+  .shop-pagination { align-items: flex-start; flex-direction: column; }
   .shop-products { padding-top: 22px; }
   .shop-empty { min-height: 0; flex-direction: column; align-items: flex-start; gap: 15px; padding: 30px 24px; }
   .shop-empty-art { width: min(53vw, 210px); align-self: center; }
@@ -433,7 +452,17 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .cart-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); align-items: start; gap: clamp(32px, 6vw, 88px); margin-top: 40px; }
 .cart-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 23px 0; border-bottom: 1px solid var(--line); }
 .cart-item h2 { margin: 0; font-size: 13px; font-weight: 500; }
-.cart-item > span { flex: 0 0 auto; font-size: 12px; }
+.cart-item-main { display: flex; min-width: 0; gap: 18px; }
+.cart-item-image { width: 76px; min-height: 98px; display: grid; flex: 0 0 76px; place-items: center; overflow: hidden; background: rgb(179 208 187 / 20%); color: var(--muted); font-size: 9px; text-align: center; }
+.cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item-details { min-width: 0; }
+.cart-item-price { flex: 0 0 auto; font-size: 12px; }
+.cart-item-controls { width: max-content; min-height: 34px; display: flex; align-items: center; border: 1px solid var(--line); }
+.cart-item-controls button { width: 34px; height: 34px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.cart-item-controls button:disabled { opacity: .35; cursor: not-allowed; }
+.cart-item-controls span { min-width: 28px; text-align: center; font-size: 11px; }
+.cart-item-remove { margin-top: 9px; padding: 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: var(--muted); cursor: pointer; font-size: 10px; }
+.cart-item-remove:disabled { opacity: .5; cursor: wait; }
 .cart-subtotal { display: flex; justify-content: space-between; gap: 20px; margin-top: 27px; font-size: 13px; font-weight: 600; }
 .cart-shipping-note { color: var(--muted); font-size: 11px; line-height: 1.7; }
 .checkout-form { max-width: none; margin: 0; padding: clamp(22px, 3vw, 34px); border: 1px solid var(--line); background: rgb(255 255 255 / 28%); }
@@ -565,7 +594,9 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 480px) {
   .cart-empty { padding: 24px 20px; }
   .cart-item { gap: 12px; }
+  .cart-item-main { gap: 12px; }
   .cart-item h2 { max-width: 220px; }
+  .cart-item-image { width: 62px; min-height: 84px; flex-basis: 62px; }
   .order-row { align-items: flex-start; }
   .order-row > div { gap: 8px; }
   .auth-page { padding: 25px 20px; }
