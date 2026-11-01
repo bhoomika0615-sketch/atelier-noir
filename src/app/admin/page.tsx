@@ -1,21 +1,32 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { AdminProductManager } from "@/components/admin-product-manager";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   try {
     await requireAdmin();
-  } catch {
-    redirect("/admin/login");
+  } catch (error) {
+    if (error instanceof Error && (error.message === "UNAUTHORIZED" || error.message === "FORBIDDEN")) {
+      redirect("/admin/login");
+    }
+    throw error;
   }
 
-  const [products, orders, users] = await Promise.all([
+  const [productCount, orders, users, products] = await Promise.all([
     prisma.product.count(),
     prisma.order.count(),
-    prisma.user.count()
+    prisma.user.count(),
+    prisma.product.findMany({
+      orderBy: { updatedAt: "desc" },
+      include: {
+        images: { orderBy: { position: "asc" } },
+        variants: { orderBy: { size: "asc" } }
+      }
+    })
   ]);
-  const metrics = [["Products", products], ["Orders", orders], ["Customers", users]] as const;
+  const metrics = [["Products", productCount], ["Orders", orders], ["Customers", users]] as const;
 
   return (
     <main className="container section admin-page">
@@ -29,7 +40,8 @@ export default async function AdminPage() {
           </article>
         ))}
       </section>
-      <p className="admin-note">Product management API is available to authorized administrators. See README for API usage and deployment setup.</p>
+      <AdminProductManager products={products} />
+      <p className="admin-note">Product image URLs must point to an existing public image. Configure managed image storage before launch; uploads are not enabled in this environment.</p>
     </main>
   );
 }

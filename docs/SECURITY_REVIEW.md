@@ -8,7 +8,7 @@ This is a security-conscious starter implementation. It is **not independently p
 |---|---|---|
 | Secret handling | Server-only environment variables; `.env*` ignored; example file contains placeholders | Search tracked files and built assets for secret patterns |
 | Admin authentication | Separate `/admin/login`; server checks ADMIN/SUPER_ADMIN role; bootstrap through seed command | Try customer credentials against admin login |
-| Route protection | Middleware gates account/admin paths; server components and private API handlers re-check session/role | Test direct page and API access without a session |
+| Route protection | Next.js proxy gates account/admin paths; server components and private API handlers re-check session/role | Test direct page and API access without a session |
 | Session handling | Opaque random token; SHA-256 verifier stored in DB; HttpOnly, SameSite=Strict cookie; 12-hour expiry | Inspect cookie attributes in browser devtools |
 | Passwords | bcrypt cost 12 | Confirm DB stores only password hashes |
 | User data isolation | Account order query is scoped by authenticated user ID; cart is scoped by user ID | Attempt cross-user object-ID access |
@@ -17,7 +17,8 @@ This is a security-conscious starter implementation. It is **not independently p
 | CSRF/origin | Mutating browser routes check same-origin `Origin`; SameSite=Strict session cookie | Test cross-origin POST requests |
 | Headers | HSTS, CSP, frame denial, nosniff, referrer and permissions policies | Inspect deployed response headers |
 | Error disclosure | Generic API error responses; server logs details | Trigger invalid requests and inspect response |
-| Payment webhook | HMAC signature validation and event idempotency | Use Razorpay test webhook events |
+| Payment verification | Checkout HMAC is checked server-side; payment/order identity, amount, INR currency, and provider status are fetched and compared | Unit-test signature validation; live provider flow still requires Razorpay sandbox credentials |
+| Payment webhook | HMAC signature validation, event idempotency, amount/currency matching, and conditional order/payment/inventory transitions | Use Razorpay test webhook events |
 
 ## Important limitations / actions before launch
 
@@ -30,7 +31,7 @@ This is a security-conscious starter implementation. It is **not independently p
 7. **Payments:** Set Razorpay test credentials first, configure the webhook URL and secret, test success/failure/refund flows, then switch to live credentials. Validate shipping address fields and tax/shipping calculations before launch.
 8. **Stock reservations:** Checkout atomically reserves inventory. The payment-captured webhook converts the reservation to a sale; payment-failed releases it. Add an expiry/reconciliation job for abandoned or delayed payment attempts before high-volume use. Do not treat this starter flow as complete payment operations.
 9. **User ownership:** Every new private route must call `requireUser()` or `requireAdmin()` and constrain database queries by the authenticated identity. Public catalogue routes are intentionally public.
-10. **Package hygiene:** Run `npm audit`, review advisories, update dependencies, run tests and build. No package audit can be claimed until dependencies are installed and scanned.
+10. **Package hygiene:** The current dependency tree passed `npm audit` with zero reported vulnerabilities. Re-run the audit after dependency changes and before deployment.
 11. **Git history:** Run Gitleaks on the complete repository history before pushing. If a credential is found, revoke/rotate it; deleting it from the latest commit is not enough.
 12. **Monitoring:** Add structured redacted logs, error monitoring, alerting, WAF/bot controls and an incident response procedure.
 

@@ -1,6 +1,7 @@
  "use client";
 
  import Script from "next/script";
+ import Link from "next/link";
  import { useState, type FormEvent } from "react";
 
 declare global {
@@ -22,6 +23,8 @@ export function CheckoutForm() {
   });
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [paymentAttempted, setPaymentAttempted] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
   type AddressField = keyof typeof form;
   function update(key: AddressField, value: string) {
     setForm((old) => ({ ...old, [key]: value }));
@@ -33,6 +36,7 @@ export function CheckoutForm() {
     setBusy(true);
     setMessage("");
     let paymentOpened = false;
+    let paymentCompleted = false;
     try {
       if (!window.Razorpay) throw new Error("Payment service is still loading. Please try again.");
       const response = await fetch("/api/checkout", {
@@ -49,15 +53,53 @@ export function CheckoutForm() {
         name: "ATELIER NOIR",
         description: "Order " + data.orderNumber,
         order_id: data.razorpayOrderId,
-        handler: () => {
-          setBusy(false);
-          setMessage("Payment submitted. Your order status will update after secure payment confirmation.");
-          window.location.href = "/account";
+        handler: async (result: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) => {
+          paymentCompleted = true;
+          setPaymentAttempted(true);
+          setMessage("Verifying payment with the gateway…");
+          try {
+            const verificationResponse = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: data.orderId,
+                razorpay_order_id: result.razorpay_order_id,
+                razorpay_payment_id: result.razorpay_payment_id,
+                razorpay_signature: result.razorpay_signature
+              })
+            });
+            const verificationData: unknown = await verificationResponse.json();
+            if (!verificationResponse.ok) {
+              const errorMessage =
+                typeof verificationData === "object" && verificationData !== null
+                  && "error" in verificationData && typeof verificationData.error === "string"
+                  ? verificationData.error
+                  : "Payment could not be verified.";
+              throw new Error(errorMessage);
+            }
+            if (typeof verificationData !== "object" || verificationData === null
+              || !("orderNumber" in verificationData) || typeof verificationData.orderNumber !== "string") {
+              throw new Error("Payment verification returned an invalid response.");
+            }
+            setOrderNumber(verificationData.orderNumber);
+            setMessage("Payment details verified. Final order status will update after gateway capture confirmation.");
+          } catch (error) {
+            console.error("[checkout-payment-verification]", error);
+            setMessage("The gateway reported payment success, but we could not confirm it yet. Check your order history before attempting payment again.");
+          } finally {
+            setBusy(false);
+          }
         },
         modal: {
           ondismiss: () => {
             setBusy(false);
-            setMessage("Payment was not completed. Your reserved items may remain held until payment status is confirmed.");
+            if (!paymentCompleted) {
+              setMessage("Payment was not completed. Your reserved items may remain held until the gateway reports its final status.");
+            }
           }
         },
         theme: { color: "#171715" }
@@ -101,10 +143,11 @@ export function CheckoutForm() {
           </label>
         ))}
       </div>
-      <button className="button checkout-submit" type="submit" disabled={busy}>
+      <button className="button checkout-submit" type="submit" disabled={busy || paymentAttempted}>
         {busy ? "Preparing secure checkout…" : "Continue to payment"} <span aria-hidden="true">↗</span>
       </button>
       {message && <p className="checkout-feedback" role="status" aria-live="polite">{message}</p>}
+      {paymentAttempted && <Link className="text-link checkout-order-link" href="/account">View order history{orderNumber ? ` · ${orderNumber}` : ""} <span aria-hidden="true">↗</span></Link>}
     </form>
   </section>;
 }

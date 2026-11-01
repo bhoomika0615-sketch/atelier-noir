@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-export function middleware(request:NextRequest){
+export function proxy(request:NextRequest){
  const response=NextResponse.next();
  if(process.env.NODE_ENV==="production"&&request.nextUrl.protocol!=="https:"){
   const url=request.nextUrl.clone();url.protocol="https:";return NextResponse.redirect(url,308);

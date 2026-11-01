@@ -48,7 +48,7 @@ Do not use the local SQLite database for production.
 - `/login`, `/register` — customer authentication
 - `/account` — customer's order history
 - `/admin/login` — separate administrator login
-- `/admin` — protected admin dashboard
+- `/admin` — protected store metrics and product/variant management (create, edit stock, publish, and archive)
 
 ## Admin account
 
@@ -64,12 +64,16 @@ The seed script creates/updates the `INITIAL_ADMIN_EMAIL` as `SUPER_ADMIN`. Use 
 - `GET /api/cart` (authenticated; own cart only)
 - `POST|PATCH|DELETE /api/cart/items` (authenticated; own cart only)
 - `GET|POST /api/admin/products` (admin only)
+- `PATCH|DELETE /api/admin/products/:id` (admin only; delete archives products to preserve order history)
 - `POST /api/checkout` (authenticated; Razorpay credentials required)
+- `POST /api/payments/verify` (authenticated; verifies the Razorpay checkout signature and payment with the provider)
 - `POST /api/payments/webhook` (Razorpay signature verification)
+
+The admin product editor manages product metadata, image URLs, and size/colour SKUs with stock. Image upload/storage, order administration, delivery serviceability, configurable shipping, returns/refunds, and CMS settings are not implemented in this deployment.
 
 ## Design system / creative tools
 
-The storefront uses local React/CSS components, Motion for React for reduced-motion-aware reveals, and a checked color system. The original wave artwork lives in `public/atelier-wave.svg`; replace it with an exported Haikei SVG if desired.
+The storefront uses local React/CSS components, Motion for React for reduced-motion-aware reveals, the Motion Primitives text effect in the hero, and a checked color system. `public/atelier-wave.svg` is an exported Haikei layered-wave asset using the brand palette.
 
 21st.dev component retrieval uses its MCP/API key and is not configured in this workspace, so the current UI does not copy registry components. To connect it, follow the [21st.dev MCP setup guide](https://21st.dev/mcp.md) and keep the API key in VS Code's secure input flow rather than committing it. Higgsfield and Manus are optional creative tools, not app runtime dependencies. Add licensed, optimized campaign and product images from your chosen creative workflow before launch; the current hero and seeded product image URLs are placeholders.
 

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 import { MotionLink } from "@/components/motion-link";
 import { ProductRail } from "@/components/product-rail";
+import { TextEffect } from "@/components/motion-primitives/text-effect";
 
 export const dynamic = "force-dynamic";
 export default async function HomePage() {
@@ -39,7 +40,7 @@ export default async function HomePage() {
     <section className="container hero-wrap">
       <div className="hero">
         <Reveal className="hero-copy" delay={0.05}>
-          <div className="hero-kicker"><span className="status-dot"/> The new season is here</div>
+          <div className="hero-kicker"><span className="status-dot"/><TextEffect as="span" per="word" preset="fade-in-blur" delay={0.12} className="hero-kicker-text">The new season is here</TextEffect></div>
           <h1 className="hero-title">Quietly<br/><i>unordinary.</i></h1>
           <p className="hero-description">A different kind of daily uniform. Thoughtful layers, tactile fabrics, and forms that feel like your own.</p>
           <div className="hero-actions"><MotionLink className="button" href="/shop">Shop the collection <span aria-hidden="true">↗</span></MotionLink><span className="hero-note">AUTUMN / WINTER 2026</span></div>

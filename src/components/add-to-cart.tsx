@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 
-export function AddToCart({ variants }: { variants: { id: string; size: string; stock: number }[] }) {
+export function AddToCart({ variants }: { variants: { id: string; size: string; color: string; stock: number }[] }) {
+  const colors = [...new Set(variants.map((variant) => variant.color))];
+  const [selectedColor, setSelectedColor] = useState(colors[0] || "");
   const [variantId, setVariantId] = useState(variants[0]?.id || "");
   const [message, setMessage] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const colorVariants = variants.filter((variant) => variant.color === selectedColor);
 
   async function add() {
     if (!variantId || isAdding) return;
@@ -42,8 +45,31 @@ export function AddToCart({ variants }: { variants: { id: string; size: string; 
     <div className="add-to-cart" aria-busy={isAdding}>
       <div className="eyebrow size-label">Select size</div>
       {variants.length ? (
-        <div className="size-options" role="group" aria-label="Available sizes">
-          {variants.map((variant) => (
+        <>
+        {colors.length > 1 && <>
+          <div className="eyebrow size-label">Select colour</div>
+          <div className="color-options" role="group" aria-label="Available colours">
+            {colors.map((color) => (
+              <button
+                type="button"
+                key={color}
+                className={`color-option${selectedColor === color ? " is-selected" : ""}`}
+                onClick={() => {
+                  setSelectedColor(color);
+                  setVariantId(variants.find((variant) => variant.color === color)?.id || "");
+                  setMessage("");
+                }}
+                disabled={isAdding}
+                aria-pressed={selectedColor === color}
+              >
+                {color}
+              </button>
+            ))}
+          </div>
+        </>}
+        <div className="eyebrow size-label">Select size</div>
+        <div className="size-options" role="group" aria-label={`Available sizes in ${selectedColor}`}>
+          {colorVariants.map((variant) => (
             <button
               type="button"
               key={variant.id}
@@ -59,6 +85,7 @@ export function AddToCart({ variants }: { variants: { id: string; size: string; 
             </button>
           ))}
         </div>
+        </>
       ) : (
         <p className="product-unavailable" role="status">Currently unavailable</p>
       )}

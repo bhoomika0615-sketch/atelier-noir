@@ -38,7 +38,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     where: { slug, published: true },
     include: {
       images: { orderBy: { position: "asc" } },
-      variants: { where: { stock: { gt: 0 } }, orderBy: { size: "asc" } }
+      variants: { where: { stock: { gt: 0 } }, orderBy: [{ color: "asc" }, { size: "asc" }] }
     }
   });
 
@@ -49,6 +49,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .map((variant) => ({
       id: variant.id,
       size: variant.size,
+      color: variant.color,
       stock: variant.stock - variant.reserved,
     }));
 
