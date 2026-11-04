@@ -43,7 +43,6 @@ export function AddToCart({ variants }: { variants: { id: string; size: string; 
 
   return (
     <div className="add-to-cart" aria-busy={isAdding}>
-      <div className="eyebrow size-label">Select size</div>
       {variants.length ? (
         <>
         {colors.length > 1 && <>

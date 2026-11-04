@@ -5,7 +5,6 @@ import { MotionLink } from "@/components/motion-link";
 
 export const dynamic = "force-dynamic";
 
-const categories = ["All pieces", "Outerwear", "Tailoring", "Essentials"];
 const sortOptions = [
   { value: "newest", label: "Newest first" },
   { value: "oldest", label: "Oldest first" },
@@ -17,6 +16,12 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
   const { category, collection, q, sort, page: pageParam } = await searchParams;
   const query = q?.trim().slice(0, 100) ?? "";
   const selectedSort = sortOptions.find((option) => option.value === sort)?.value ?? "newest";
+  const categoryRecords = await prisma.product.findMany({
+    where: { published: true },
+    select: { category: true },
+    distinct: ["category"],
+    orderBy: { category: "asc" }
+  });
   const records = await prisma.product.findMany({
     where: {
       published: true,
@@ -91,7 +96,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
     { name: "All pieces", href: filterHref({ category: undefined, collection: undefined }), selected: !category && !collection },
     { name: "New arrivals", href: filterHref({ category: undefined, collection: "new" }), selected: collection === "new" },
     { name: "Sale", href: filterHref({ category: undefined, collection: "sale" }), selected: collection === "sale" },
-    ...categories.slice(1).map((name) => ({
+    ...categoryRecords.map(({ category: name }) => ({
       name,
       href: filterHref({ category: name, collection: undefined }),
       selected: category === name && !collection
