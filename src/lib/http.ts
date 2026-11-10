@@ -9,7 +9,13 @@ export function serverError(error: unknown) {
 }
 export function assertSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
-  const appUrl = process.env.APP_URL;
-  if (!origin || !appUrl) return false;
-  try { return new URL(origin).origin === new URL(appUrl).origin; } catch { return false; }
+  const allowedOrigins = process.env.APP_URLS?.split(",").map((value) => value.trim()).filter(Boolean)
+    ?? (process.env.APP_URL ? [process.env.APP_URL] : []);
+  if (!origin || !allowedOrigins.length) return false;
+  try {
+    const requestOrigin = new URL(origin).origin;
+    return allowedOrigins.some((value) => new URL(value).origin === requestOrigin);
+  } catch {
+    return false;
+  }
 }

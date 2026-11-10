@@ -7,6 +7,6 @@
     "isolatedModules": true, "jsx": "preserve", "incremental": true,
     "plugins": [{"name": "next"}], "paths": {"@/*": ["./src/*"]}
   },
-  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", ".next-http/types/**/*.ts", ".next-https/types/**/*.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

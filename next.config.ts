@@ -10,11 +10,17 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   poweredByHeader: false,
   reactStrictMode: true,
   outputFileTracingRoot: process.cwd(),
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [{
+      source: "/(.*)",
+      headers: process.env.NODE_ENV === "production"
+        ? securityHeaders
+        : securityHeaders.filter(({ key }) => key !== "Strict-Transport-Security")
+    }];
   }
 };
 export default nextConfig;

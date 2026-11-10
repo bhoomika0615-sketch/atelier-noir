@@ -17,6 +17,7 @@ export function SiteHeader() {
           <Link href="/shop?category=Outerwear">Outerwear</Link>
           <Link href="/shop?category=Essentials">Essentials</Link>
           <Link href="/shop?category=Tailoring">Tailoring</Link>
+          <Link href="/#sartorial-lab">Studio rail</Link>
           <Link href="/journal">Journal</Link>
         </nav>
       </details>
@@ -26,6 +27,7 @@ export function SiteHeader() {
         <Link className="navlink" href="/shop?collection=new">New</Link>
         <Link className="navlink" href="/shop?collection=sale">Sale</Link>
         <Link className="navlink" href="/shop?category=Outerwear">Outerwear</Link>
+        <Link className="navlink" href="/#sartorial-lab">Studio</Link>
         <Link className="navlink" href="/journal">Journal</Link>
       </nav>
       <nav className="header-actions" aria-label="Account and shopping bag">

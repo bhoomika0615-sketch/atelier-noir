@@ -24,9 +24,14 @@ A new editorial menswear e-commerce project built with Next.js App Router, TypeS
    npm run dev
    ```
 
-The development command starts the site at `https://localhost:3000`, creates a local SQLite database at `prisma/dev.db`, and generates a SQLite Prisma client automatically. It uses a trusted local mkcert certificate stored outside the repository. On a new Windows machine, install [mkcert](https://github.com/FiloSottile/mkcert#installation) and run `mkcert -install` once before `npm run dev`. No `.env` file or PostgreSQL installation is needed for local development.
+The development command starts both local origins:
 
-Only run one development server at a time. If port 3000 is already serving ATELIER NOIR, keep using `https://localhost:3000`; to restart it, stop the existing server with `Ctrl+C` in its terminal before running `npm run dev` again. The dev script checks the port before Prisma runs, avoiding query-engine DLL replacement errors while another server is using the client.
+   - HTTP: `http://localhost:3000`
+   - HTTPS: `https://localhost:3443`
+
+It creates the local SQLite database at `prisma/dev.db` and generates a SQLite Prisma client automatically. Next.js generates a local self-signed HTTPS certificate; your browser may ask you to accept its warning. For a trusted certificate, install [mkcert](https://github.com/FiloSottile/mkcert#installation) and run `mkcert -install` before starting the servers. No `.env` file or PostgreSQL installation is needed for local development.
+
+Run only one `npm run dev` process at a time. Stop both servers with `Ctrl+C` before restarting. The HTTP and HTTPS servers use separate Next.js development output directories and both origins are allowed for same-origin API checks.
 
 To recreate the local database schema and client manually, run `npm run db:local`.
 
@@ -62,7 +67,7 @@ The seed script creates/updates the `INITIAL_ADMIN_EMAIL` as `SUPER_ADMIN`. Use 
 - `POST /api/auth/logout`
 - `GET /api/products` (intentionally public catalogue)
 - `GET /api/cart` (authenticated; own cart only)
-- `POST /api/cart/items` (authenticated; own cart only)
+- `POST|PATCH|DELETE /api/cart/items` (authenticated; own cart only; add, set quantity, or remove a variant)
 - `GET|POST /api/admin/products` (admin only)
 - `POST /api/checkout` (authenticated; Razorpay credentials required)
 - `POST /api/payments/webhook` (Razorpay signature verification)

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 import { MotionLink } from "@/components/motion-link";
 import { ProductRail } from "@/components/product-rail";
+import { SartorialStage } from "@/components/sartorial-stage";
 
 export const dynamic = "force-dynamic";
 export default async function HomePage() {
@@ -34,24 +35,30 @@ export default async function HomePage() {
     (product) => product.compareAtPaise !== null && product.compareAtPaise > product.pricePaise
   );
   const featuredProducts = products.filter((product) => product.featured).slice(0, 8);
+  const studioPiece = products[0];
+  const categories = [
+    { name: "Outerwear", index: "01 / LAYER UP" },
+    { name: "Tailoring", index: "02 / FIND YOUR LINE" },
+    { name: "Essentials", index: "03 / EVERY DAY" }
+  ];
 
   return <main>
     <section className="container hero-wrap">
       <div className="hero">
         <Reveal className="hero-copy" delay={0.05}>
-          <div className="hero-kicker"><span className="status-dot"/> The new season is here</div>
-          <h1 className="hero-title">Quietly<br/><i>unordinary.</i></h1>
-          <p className="hero-description">A different kind of daily uniform. Thoughtful layers, tactile fabrics, and forms that feel like your own.</p>
-          <div className="hero-actions"><MotionLink className="button" href="/shop">Shop the collection <span aria-hidden="true">↗</span></MotionLink><span className="hero-note">AUTUMN / WINTER 2026</span></div>
+          <div className="hero-kicker"><span className="status-dot"/> Volume IV / Architectural silhouettes</div>
+          <h1 className="hero-title">The purity<br/><i>of weight.</i></h1>
+          <p className="hero-description">Considered materials, deliberate proportions, and pieces designed to earn their place in your everyday uniform.</p>
+          <div className="hero-actions"><MotionLink className="button" href="/shop?collection=new">Explore new arrivals <span aria-hidden="true">↗</span></MotionLink><span className="hero-note">ATELIER NOIR / THE COLLECTION</span></div>
         </Reveal>
         <Reveal className="hero-image-wrap" delay={0.12}>
           <div className="hero-image" role="img" aria-label="Fashion campaign from the Atelier Noir collection">
-            <span className="hero-image-label">01 / THE EVERYDAY ICON</span>
+            <span className="hero-image-label">Tactile permanence / refined restraint</span>
             <span className="hero-image-stamp">ATELIER<br/>NOIR</span>
           </div>
         </Reveal>
       </div>
-      <div className="hero-caption"><span>Designed for your own rhythm.</span><span>01 — 03</span></div>
+      <div className="hero-caption"><span>Designed for your own rhythm.</span><span>Volume IV — Atelier Noir</span></div>
     </section>
     <div className="container brand-values" aria-label="Our approach">
       <div><span>01</span> Made with intention</div>
@@ -60,14 +67,6 @@ export default async function HomePage() {
     </div>
     <ProductRail
       sectionId="available-on-the-rail"
-      eyebrow="The considered edit"
-      title="Available on the rail"
-      description="Every piece currently published and ready to choose."
-      products={products}
-      href="/shop"
-      emptyMessage="There are no published, in-stock pieces in the catalog yet. Once a piece is published and available, it will appear here."
-    />
-    <ProductRail
       eyebrow="Just arrived"
       title="New arrivals"
       description="The latest pieces, sorted by when they joined the collection."
@@ -75,6 +74,25 @@ export default async function HomePage() {
       href="/shop?collection=new"
       emptyMessage="There are no published, in-stock arrivals at the moment."
     />
+    <section className="container sartorial-lab" id="sartorial-lab" aria-labelledby="sartorial-lab-title">
+      <div className="sartorial-panel">
+        <Reveal className="sartorial-copy">
+          <div className="eyebrow">Studio / 3D sartorial lab</div>
+          <h2 id="sartorial-lab-title">Form in<br/><i>motion.</i></h2>
+          <p>{studioPiece
+            ? `A closer study of ${studioPiece.name}, selected from the pieces currently available on the rail.`
+            : "A study in proportion, material, and movement. The studio rail will feature pieces when they are published and available."}</p>
+          <MotionLink className="button" href={studioPiece ? `/product/${studioPiece.slug}` : "/shop"}>
+            {studioPiece ? "Discover this piece" : "Explore the collection"} <span aria-hidden="true">↗</span>
+          </MotionLink>
+        </Reveal>
+        <SartorialStage
+          src={studioPiece?.images[0]?.url ?? "/atelier-noir-campaign.webp"}
+          alt={studioPiece?.images[0]?.alt ?? "Atelier Noir campaign image"}
+          label={studioPiece?.name ?? "Atelier Noir / Studio study"}
+        />
+      </div>
+    </section>
     <ProductRail
       eyebrow="A considered find"
       title="The sale rail"
@@ -94,16 +112,25 @@ export default async function HomePage() {
       />
     )}
     <section className="container category-section">
-      <Reveal className="section-head"><div><div className="eyebrow">Find your form</div><h2 className="section-title">A study in essentials<span className="title-period">.</span></h2></div><p className="category-intro">Pieces that work harder, wear longer, and make getting dressed feel effortless.</p></Reveal>
+      <Reveal className="section-head"><div><div className="eyebrow">Curated architecture</div><h2 className="section-title">Find your form<span className="title-period">.</span></h2></div><p className="category-intro">Explore the collection by silhouette, category, and the pieces that make a wardrobe your own.</p></Reveal>
       <div className="category-grid">
-        <Reveal delay={0.03}><MotionLink className="category-card category-outerwear" href="/shop?category=Outerwear"><span className="category-index">01 / LAYER UP</span><span className="category-name">Outerwear <span aria-hidden="true">↗</span></span></MotionLink></Reveal>
-        <Reveal delay={0.11}><MotionLink className="category-card category-tailoring" href="/shop?category=Tailoring"><span className="category-index">02 / FIND YOUR LINE</span><span className="category-name">Tailoring <span aria-hidden="true">↗</span></span></MotionLink></Reveal>
-        <Reveal delay={0.19}><MotionLink className="category-card category-essentials" href="/shop?category=Essentials"><span className="category-index">03 / EVERY DAY</span><span className="category-name">Essentials <span aria-hidden="true">↗</span></span></MotionLink></Reveal>
+        {categories.map((category, index) => {
+          const piece = products.find((product) => product.category === category.name);
+          return (
+            <Reveal delay={0.03 + index * 0.08} key={category.name}>
+              <MotionLink className="category-card" href={`/shop?category=${encodeURIComponent(category.name)}`}>
+                {piece?.images[0] && <img className="category-image" src={piece.images[0].url} alt={piece.images[0].alt} loading="lazy" />}
+                <span className="category-index">{category.index}</span>
+                <span className="category-name">{category.name} <span aria-hidden="true">↗</span></span>
+              </MotionLink>
+            </Reveal>
+          );
+        })}
       </div>
     </section>
     <div className="ticker" aria-hidden="true">
-      <div className="ticker-track" aria-hidden="true">{Array.from({ length: 2 }, (_, index) => <span className="ticker-set" key={index}><span>Made with intention</span><span className="ticker-star">✳</span><span>Worn on repeat</span><span className="ticker-star">✳</span><span>Never overthought</span><span className="ticker-star">✳</span></span>)}</div>
+      <div className="ticker-track" aria-hidden="true">{Array.from({ length: 2 }, (_, index) => <span className="ticker-set" key={index}><span>Tactile permanence</span><span className="ticker-star">✳</span><span>Refined restraint</span><span className="ticker-star">✳</span><span>Architectural silhouettes</span><span className="ticker-star">✳</span></span>)}</div>
     </div>
-    <section className="editorial-band"><Reveal className="editorial-inner"><div className="eyebrow">A point of view / Est. MMXXIV</div><h2 className="editorial-title">Less, but with<br/><i>intention.</i></h2><div className="editorial-bottom"><p>Clothes should feel like you.<br/>Just a little more so.</p><Link className="editorial-link" href="/journal">Our way of seeing <span aria-hidden="true">↗</span></Link></div></Reveal></section>
+    <section className="editorial-band"><Reveal className="editorial-inner"><div className="eyebrow">Atelier Noir / The archive</div><h2 className="editorial-title">Less, but with<br/><i>intention.</i></h2><div className="editorial-bottom"><p>Clothes should feel like you.<br/>Just a little more so.</p><Link className="editorial-link" href="/journal">Explore the journal <span aria-hidden="true">↗</span></Link></div></Reveal></section>
   </main>;
 }

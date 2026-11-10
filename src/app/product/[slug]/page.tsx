@@ -42,7 +42,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="product-details">
           <div className="eyebrow">{product.category} / ATELIER NOIR</div>
           <h1 className="serif product-title">{product.name}</h1>
-          <p className="product-price">₹{(product.pricePaise / 100).toLocaleString("en-IN")}</p>
+          <p className="product-price">
+            ₹{(product.pricePaise / 100).toLocaleString("en-IN")}
+            {product.compareAtPaise !== null && product.compareAtPaise > product.pricePaise && (
+              <>
+                <del>₹{(product.compareAtPaise / 100).toLocaleString("en-IN")}</del>
+                <span className="product-sale-label">Sale</span>
+              </>
+            )}
+          </p>
           <p className="product-description">{product.description}</p>
           <AddToCart variants={availableVariants} />
           <p className="product-assurance">Considered materials. Made to be worn on repeat.</p>
