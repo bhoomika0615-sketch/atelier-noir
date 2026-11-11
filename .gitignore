@@ -12,3 +12,4 @@ coverage/
 *.tsbuildinfo
 prisma/dev.db
 certificates.mcp.json
+.mcp.json

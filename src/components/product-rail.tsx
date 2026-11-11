@@ -77,6 +77,7 @@ export function ProductRail({ sectionId, eyebrow, title, description, products, 
                     ) : (
                       <span className="product-rail-image-fallback">{product.category}</span>
                     )}
+                    <div className="product-rail-overlay" aria-hidden="true" />
                     {onSale && <span className="product-rail-badge">-{discount}%</span>}
                     <span className="product-rail-discover">View piece <span aria-hidden="true">↗</span></span>
                   </div>
